@@ -19,15 +19,21 @@
 
 4. Can we reduce some of the timings ? or should we rather increase them ?
 
+## Prerequisites
+
+Make sure to download Uppaal from here :
+http://uppaal.org/
+
 ## Running the project
 
 First, check if you have the x permission for the following files :
 * uppaal64-4.1.19/uppaal
 * uppaal64-4.1.19/bin-Linux/server
+(I'm using the 4.1.19 version, the version number can change if you've downloaded another version)
 
-Then just run :
+Then you can go the your Uppaal repertory and just run :
 
 ```sh
-./uppaal train.xml
+./uppaal <path_to_this_cloned_repertory>/train.xml
 ```
 
