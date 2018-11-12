@@ -52,7 +52,7 @@ clock train_clock;</declaration>
 			<source ref="id2"/>
 			<target ref="id4"/>
 			<label kind="guard" x="-119" y="68">train_clock == 40</label>
-			<label kind="synchronisation" x="18" y="8">light!</label>
+			<label kind="synchronisation" x="18" y="8">light[1]!</label>
 			<nail x="824" y="68"/>
 			<nail x="-170" y="68"/>
 		</transition>
@@ -64,7 +64,7 @@ clock train_clock;</declaration>
 		<transition>
 			<source ref="id4"/>
 			<target ref="id3"/>
-			<label kind="synchronisation" x="-211" y="-34">light!</label>
+			<label kind="synchronisation" x="-211" y="-34">light[0]!</label>
 			<label kind="assignment" x="-211" y="-17">train_clock = 0</label>
 		</transition>
 	</template>
@@ -165,7 +165,7 @@ carCrossing = true</label>
 		<transition>
 			<source ref="id13"/>
 			<target ref="id12"/>
-			<label kind="synchronisation" x="195" y="-34">light?</label>
+			<label kind="synchronisation" x="195" y="-34">light[1]?</label>
 			<label kind="assignment" x="187" y="0">cr_clock = 0</label>
 		</transition>
 		<transition>
@@ -184,7 +184,7 @@ carCrossing = true</label>
 		<transition>
 			<source ref="id15"/>
 			<target ref="id14"/>
-			<label kind="synchronisation" x="-323" y="-34">light?</label>
+			<label kind="synchronisation" x="-323" y="-34">light[0]?</label>
 			<label kind="assignment" x="-365" y="0">cr_clock = 0,
 canCross = false</label>
 		</transition>
