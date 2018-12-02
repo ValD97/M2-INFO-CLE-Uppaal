@@ -2,13 +2,12 @@
 <!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
 <nta>
 	<declaration>// Place global declarations here.
-chan light[2];
-chan stuckedCar[2];
-chan alert[2];
-
-bool canCross = true;
+bool light = false;
+bool stuckedCar = false;
 bool carCrossing = false;
-bool trainCanCross = true;</declaration>
+bool trainCanCross = true;
+
+clock cr_clock;</declaration>
 	<template>
 		<name x="5" y="5">Train</name>
 		<declaration>// Place local declarations here.
@@ -35,7 +34,7 @@ clock train_clock;</declaration>
 		<transition>
 			<source ref="id0"/>
 			<target ref="id2"/>
-			<label kind="synchronisation" x="714" y="-76">alert[1]?</label>
+			<label kind="guard" x="756" y="-110">trainCanCross == true</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>
@@ -45,16 +44,16 @@ clock train_clock;</declaration>
 		<transition>
 			<source ref="id3"/>
 			<target ref="id1"/>
-			<label kind="synchronisation" x="170" y="-102">alert[0]?</label>
-			<label kind="assignment" x="119" y="-85">train_clock = 10</label>
+			<label kind="guard" x="76" y="-110">trainCanCross == false</label>
+			<label kind="assignment" x="93" y="-93">train_clock = 10</label>
 		</transition>
 		<transition>
 			<source ref="id2"/>
 			<target ref="id4"/>
-			<label kind="guard" x="-119" y="68">train_clock == 40</label>
-			<label kind="synchronisation" x="18" y="8">light[1]!</label>
-			<nail x="824" y="68"/>
-			<nail x="-170" y="68"/>
+			<label kind="guard" x="25" y="76">train_clock == 40</label>
+			<label kind="assignment" x="42" y="93">light = false</label>
+			<nail x="790" y="68"/>
+			<nail x="-204" y="68"/>
 		</transition>
 		<transition>
 			<source ref="id3"/>
@@ -64,129 +63,123 @@ clock train_clock;</declaration>
 		<transition>
 			<source ref="id4"/>
 			<target ref="id3"/>
-			<label kind="synchronisation" x="-211" y="-34">light[0]!</label>
-			<label kind="assignment" x="-211" y="-17">train_clock = 0</label>
+			<label kind="assignment" x="-136" y="-8">train_clock = 0,
+light = true</label>
 		</transition>
 	</template>
 	<template>
 		<name>Car</name>
-		<declaration>clock car_clock;</declaration>
+		<declaration>clock carClock;</declaration>
 		<location id="id5" x="34" y="-263">
-			<name x="24" y="-297">Stucked</name>
+			<name x="-25" y="-297">Stucked</name>
 		</location>
 		<location id="id6" x="246" y="-161">
 			<name x="236" y="-195">Crossed</name>
 		</location>
 		<location id="id7" x="-161" y="-161">
-			<name x="-170" y="-187">Go</name>
-			<label kind="invariant" x="-212" y="-144">car_clock &lt;= 5</label>
+			<name x="-178" y="-195">Going</name>
+			<label kind="invariant" x="-212" y="-144">carClock &lt;= 5</label>
 		</location>
 		<location id="id8" x="-612" y="-161">
-			<name x="-622" y="-195">Car</name>
+			<name x="-622" y="-195">Waiting</name>
 		</location>
 		<init ref="id8"/>
 		<transition>
 			<source ref="id5"/>
 			<target ref="id6"/>
-			<label kind="synchronisation" x="110" y="-246">stuckedCar[1]!</label>
-			<label kind="assignment" x="144" y="-229">carCrossing = false</label>
+			<label kind="assignment" x="153" y="-246">carCrossing = false,
+stuckedCar = false</label>
 		</transition>
 		<transition>
 			<source ref="id7"/>
 			<target ref="id5"/>
-			<label kind="guard" x="-178" y="-263">canCross == false 
-&amp;&amp; car_clock == 5</label>
-			<label kind="synchronisation" x="-170" y="-229">stuckedCar[0]!</label>
+			<label kind="guard" x="-144" y="-246">cr_clock &gt; 5</label>
+			<label kind="assignment" x="-187" y="-229">stuckedCar = true</label>
 		</transition>
 		<transition>
 			<source ref="id7"/>
 			<target ref="id6"/>
-			<label kind="guard" x="-42" y="-204">car_clock == 5
-&amp;&amp; canCross == true</label>
+			<label kind="guard" x="-76" y="-195">carClock &gt;= 1 &amp;&amp; carClock == 5
+&amp;&amp; cr_clock &lt;= 5</label>
 			<label kind="assignment" x="-42" y="-153">carCrossing = false</label>
 		</transition>
 		<transition>
 			<source ref="id8"/>
 			<target ref="id7"/>
-			<label kind="guard" x="-535" y="-187">canCross == true &amp;&amp; carCrossing == false</label>
-			<label kind="assignment" x="-459" y="-153">car_clock = 0,
+			<label kind="guard" x="-535" y="-187">light == false &amp;&amp; carCrossing == false</label>
+			<label kind="assignment" x="-459" y="-153">carClock = 0,
 carCrossing = true</label>
 		</transition>
 	</template>
 	<template>
 		<name>Crossroad</name>
-		<declaration>clock cr_clock;</declaration>
 		<location id="id9" x="110" y="-153">
 			<name x="100" y="-187">CarMovedOut</name>
 		</location>
-		<location id="id10" x="34" y="-297">
-			<name x="24" y="-331">AlertedTrain</name>
-		</location>
-		<location id="id11" x="-34" y="-153">
+		<location id="id10" x="-34" y="-153">
 			<name x="-170" y="-187">DetectedStuckedCar</name>
 		</location>
-		<location id="id12" x="459" y="-8">
+		<location id="id11" x="459" y="-8">
 			<name x="433" y="-51">Opening</name>
 			<label kind="invariant" x="449" y="9">cr_clock &lt;= 5</label>
 		</location>
-		<location id="id13" x="34" y="-8">
+		<location id="id12" x="34" y="-8">
 			<name x="8" y="8">Closed</name>
 		</location>
-		<location id="id14" x="-178" y="-8">
+		<location id="id13" x="-178" y="-8">
 			<name x="-238" y="-51">ReceivingSignal</name>
 			<label kind="invariant" x="-221" y="8">cr_clock &lt;= 5</label>
 		</location>
-		<location id="id15" x="-416" y="-8">
+		<location id="id14" x="-416" y="-8">
 			<name x="-426" y="-42">Opened</name>
 		</location>
-		<init ref="id15"/>
+		<init ref="id14"/>
 		<transition>
-			<source ref="id9"/>
-			<target ref="id13"/>
-			<label kind="synchronisation" x="93" y="-102">alert[1]!</label>
-			<label kind="assignment" x="76" y="-76">trainCanCross = true</label>
+			<source ref="id12"/>
+			<target ref="id12"/>
+			<label kind="guard" x="-8" y="76">light == true</label>
+			<nail x="110" y="76"/>
+			<nail x="-34" y="76"/>
 		</transition>
 		<transition>
 			<source ref="id10"/>
 			<target ref="id9"/>
-			<label kind="synchronisation" x="68" y="-263">stuckedCar[1]?</label>
+			<label kind="assignment" x="-25" y="-178">stuckedCar = false</label>
 		</transition>
 		<transition>
-			<source ref="id11"/>
-			<target ref="id10"/>
-			<label kind="synchronisation" x="-51" y="-263">alert[0]!</label>
-			<label kind="assignment" x="-136" y="-246">trainCanCross = false</label>
-		</transition>
-		<transition>
-			<source ref="id13"/>
-			<target ref="id11"/>
-			<label kind="synchronisation" x="-127" y="-102">stuckedCar[0]?</label>
-		</transition>
-		<transition>
-			<source ref="id13"/>
+			<source ref="id9"/>
 			<target ref="id12"/>
-			<label kind="synchronisation" x="195" y="-34">light[1]?</label>
-			<label kind="assignment" x="187" y="0">cr_clock = 0</label>
+			<label kind="assignment" x="76" y="-76">trainCanCross = true</label>
 		</transition>
 		<transition>
 			<source ref="id12"/>
-			<target ref="id15"/>
+			<target ref="id10"/>
+			<label kind="guard" x="-153" y="-102">stuckedCar == true</label>
+			<label kind="assignment" x="-153" y="-85">trainCanCross = false</label>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id11"/>
+			<label kind="guard" x="170" y="-34">light == false</label>
+			<label kind="assignment" x="187" y="0">cr_clock = 0</label>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id14"/>
 			<label kind="guard" x="-25" y="144">cr_clock == 5</label>
-			<label kind="assignment" x="-34" y="161">canCross = true</label>
 			<nail x="374" y="144"/>
 			<nail x="-331" y="144"/>
 		</transition>
 		<transition>
-			<source ref="id14"/>
-			<target ref="id13"/>
+			<source ref="id13"/>
+			<target ref="id12"/>
 			<label kind="guard" x="-119" y="-25">cr_clock == 5</label>
 		</transition>
 		<transition>
-			<source ref="id15"/>
-			<target ref="id14"/>
-			<label kind="synchronisation" x="-323" y="-34">light[0]?</label>
-			<label kind="assignment" x="-365" y="0">cr_clock = 0,
-canCross = false</label>
+			<source ref="id14"/>
+			<target ref="id13"/>
+			<label kind="guard" x="-357" y="-42">light == true</label>
+			<label kind="assignment" x="-365" y="0">cr_clock = 0</label>
 		</transition>
 	</template>
 	<system>// Place template instantiations here.
@@ -198,5 +191,11 @@ PCrossroad = Crossroad();
 system PTrain, PCar, PCar2, PCrossroad;
     </system>
 	<queries>
+		<query>
+			<formula>A[] not PCar.Crushed
+			</formula>
+			<comment>
+			</comment>
+		</query>
 	</queries>
 </nta>
