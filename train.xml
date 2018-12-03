@@ -198,5 +198,11 @@ PCrossroad = Crossroad();
 system PTrain, PCar, PCar2, PCrossroad;
     </system>
 	<queries>
+		<query>
+			<formula>A&lt;&gt; PCar.Crossed
+			</formula>
+			<comment>
+			</comment>
+		</query>
 	</queries>
 </nta>
